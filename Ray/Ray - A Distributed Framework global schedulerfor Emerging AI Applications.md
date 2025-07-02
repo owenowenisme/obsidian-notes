@@ -8,7 +8,7 @@
 -  To achieve scalability, we propose a bottom-up distributed scheduling strategy
 ## Architecture
 ### System Layer
-![[attachments/Screenshot 2025-05-19 at 11.16.34 AM.png]]
+![Ray System Architecture](attachments/ray-system-architecture.png)
 #### Global Control Store (GCS)(Metadata store)
 - Maintains the entire control state of the system
 - A key-value store with pub-sub functionality
@@ -23,7 +23,7 @@ Ray needs to dynamically schedule millions of tasks per second, tasks which may 
 - Distributed schedulers such as work stealing, Sparrow & Canary can achieve high scale, but they either don’t consider data locality, or assume tasks belong to independent jobs, or assume the computation graph is known.
 - Ray design a two-level hierarchical scheduler consisting of a global scheduler and per-node local schedulers
 - Tasks created -> submit to node’s local scheduler -> local scheduler schedules tasks locally unless the node is overloaded (i.e., its local task queue exceeds a predefined threshold), or it cannot satisfy a task’s requirements (e.g., lacks a GPU). -> forward to global scheduler if a local scheduler decides not to schedule a task locally. **Bottom-Up Distributed Scheduler is named by this since it attempts to schedule tasks locally first.** 
-![[attachments/Screenshot 2025-05-19 at 2.19.19 PM.png]]
+![Ray Bottom-Up Distributed Scheduler](attachments/ray-bottom-up-distributed-scheduler.png)
 - Global scheduler making scheduling decisions based on: each node’s load, task’s constraints.
 - More precisely, global scheduler identifies the set of nodes that have enough resources of the type requested by the task, and from these nodes selects the node which provides the lowest estimated waiting time.
   At a given node, this time is the sum of (i) the estimated time the task will be queued at that node (i.e., task queue size times average task execution), and (ii) the estimated transfer time of task’s remote inputs (i.e., total size of remote inputs divided by average bandwidth).
@@ -40,7 +40,7 @@ Ray needs to dynamically schedule millions of tasks per second, tasks which may 
 - Ray object store does not support distributed objects, i.e., each object fits on a single node.
 #### Implementation
 
-![[attachments/Screenshot 2025-05-19 at 5.51.32 PM.png]]
+![Ray Task Execution Flow](attachments/ray-task-execution-flow.png)
 0. Remote function add() is automatically registered with the GCS upon initialization and distributed to every worker in the system
 1. Driver submits add(a, b) to the local scheduler
 2. Forwards it to a global scheduler
@@ -52,7 +52,7 @@ Ray needs to dynamically schedule millions of tasks per second, tasks which may 
 8. As all arguments of add() are now stored locally, the local scheduler invokes add() at a local worker
 9. Local worker execute with arguments in its object store.
 
-![[attachments/Screenshot 2025-05-19 at 5.51.42 PM.png]]
+![Ray Task Result Retrieval Flow](attachments/ray-task-result-retrieval-flow.png)
 1. Driver checks the local object store for the value c, using the future idc returned by add()
 2. local object store doesn’t store c, it looks up its location in the GCS.At this time, there is no entry for c, as c has not been created yet. As a result, N1’s object store registers a callback with the Object Table to be triggered when c’s entry has been created
 3. Meanwhile, at N2, add() completes its execution, stores the result c in the local object store
