@@ -5,7 +5,7 @@
 #### Problem: ML Dataset Iteration is slow
 ##### Original Pattern
 It's also a popular approach among ML Engineers.
-![[Pasted image 20250516174757.png]]
+![[attachments/Pasted image 20250516174757.png]]
 Pros: 
 - Can scale up data processing in Spark easily
 - Templatized workflow can be easily reused
@@ -15,14 +15,14 @@ Cons:
 - Need to process full dataset in every batch (Before doing anything else) -> Long feedback loop (Need to wait for a long time before discovering some mistakes)
 ##### Alternative: Last-Mile Processing in Trainer
 Move the data processing job into trainer.
-![[Pasted image 20250516174813.png]]
+![[attachments/Pasted image 20250516174813.png]]
 Pros: 
 - Can be done in one framework -> Easy to iterate
 - Immediately feedback
 Cons:
 - Data processing can't be scale beyond a local machine (since its inside the trainer job)
 - Adding more data processing workload makes cpu utilization grows faster than gpu utilization -> GPU utilization rate falls
-![[Pasted image 20250516180102.png]]
+![[attachments/Pasted image 20250516180102.png]]
 #### Final solution: Using Ray for Last Mile Processing
 
 

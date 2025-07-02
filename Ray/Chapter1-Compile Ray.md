@@ -461,9 +461,6 @@ Successfully installed ray
 
 
 
-### VSCode Config
-C
 ### References
 - https://docs.ray.io/en/latest/ray-contribute/development.html
 - https://zhuanlan.zhihu.com/p/14305591990
-- 

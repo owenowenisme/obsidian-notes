@@ -18,7 +18,7 @@ sudo ln -sf /usr/bin/clangd-12 /usr/bin/clangd
 
 ### Step3: 安裝vscode Clangd extension
 
-![[Screenshot 2025-06-28 at 4.44.48 PM.png]]
+![[attachments/Screenshot 2025-06-28 at 4.44.48 PM.png]]
 ### Step4: compile `compile_commands.json`
 `compile_commands.json` 是一個可以讓language server 了解codebase info 的檔案。一般來說要自己在BUILD.bazel加入一些config，不過Ray的repo中已經有那些config（詳見：[bazel-compile-commands-extractor](https://github.com/hedronvision/bazel-compile-commands-extractor）），所以我們可以直接跑指令來build) )
 所以我們可以直接來build`compile_commands.json`:
@@ -40,6 +40,6 @@ bazel run :refresh_compile_commands
 重新reload 一下VSCode，讓clangd index一下，就可以用了。
 ## 結果 
 可以看到現在hover 會顯示對應的definition & description，也能正常的jump to definition
-![[Screenshot 2025-06-28 at 1.17.21 PM.png]]
+![[attachments/Screenshot 2025-06-28 at 1.17.21 PM.png]]
 ## 尚未解決
 - Ray 的 codebase目前不確定為何會有很多editor的錯誤，不確定是他們沒改或是我有什麼設定忘了加，目前除了眼睛看了有點暈之外其他不影響，所以暫時就先這樣。
