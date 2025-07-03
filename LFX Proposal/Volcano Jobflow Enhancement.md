@@ -1,13 +1,10 @@
 ## Table of Contents
-   - [[Volcano Jobflow Enhancement#Expected Goal|Expected Goal]]
-   - [[Volcano Jobflow Enhancement#Implementation Plan|Implementation Plan]]
-       - [[Volcano Jobflow Enhancement#Support modifying parameters of a JobTemplate|Support modifying parameters of a JobTemplate]]
-           - [[Volcano Jobflow Enhancement#Some Implementation...|Some Implementation...]]
-       - [[Volcano Jobflow Enhancement#Lack of Robust Error Handling:|Lack of Robust Error Handling:]]
-           - [[Volcano Jobflow Enhancement#Some Implementation...|Some Implementation...]]
-           - [[Volcano Jobflow Enhancement#Expected Outcome|Expected Outcome]]
-       - [[Volcano Jobflow Enhancement#Insufficient Control Flow Options|Insufficient Control Flow Options]]
-   - [[Volcano Jobflow Enhancement#Conclusion|Conclusion]]
+- [Expected Goal](#expected-goal)
+- [Implementation Plan](#implementation-plan)
+  - [Support modifying parameters of a JobTemplate](#support-modifying-parameters-of-a-jobtemplate)
+  - [Lack of Robust Error Handling](#lack-of-robust-error-handling)
+  - [Insufficient Control Flow Options](#insufficient-control-flow-options)
+- [Conclusion](#conclusion)
 
 ## Expected Goal
 There are three main expected outcomes as written in [upstream issue](https://github.com/volcano-sh/volcano/issues/4275).
@@ -172,7 +169,7 @@ spec:
     - name: e
       dependsOn:
         targets: ['c','d']
-	  maxRetry: 3
+      maxRetry: 3
 ```
 ### Insufficient Control Flow Options
 I'm not quite sure and don't have the context about how we are going to allow end users to use this feature.
