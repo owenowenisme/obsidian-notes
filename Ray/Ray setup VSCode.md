@@ -43,3 +43,4 @@ bazel run :refresh_compile_commands
 ![Clangd Hover and Jump to Definition Demo](attachments/clangd-hover-jump-to-definition-demo.png)
 ## 尚未解決
 - Ray 的 codebase目前不確定為何會有很多editor的錯誤，不確定是他們沒改或是我有什麼設定忘了加，目前除了眼睛看了有點暈之外其他不影響，所以暫時就先這樣。
+https://stackoverflow.com/questions/41356173/how-to-use-clang-instead-g-in-bazel
