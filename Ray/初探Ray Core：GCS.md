@@ -17,6 +17,7 @@ GCS提供了以下重要功能：
 ![](attachments/Screenshot%202025-07-17%20at%202.04.23%20PM.png)
 ## GCS Entry Point
 `src/ray/gcs/gcs_server/gcs_server_main.cc`
+
 - Parse command line flags（如 redis_address、gcs_server_port 等）
 - Install signal handler（SIGTERM）處理gracefully shutdown 等
 - Initialize Ray Event 用於事件追蹤
@@ -103,7 +104,12 @@ StartHealthCheck 裡面就是 grpc 去call node 然後看status 失敗的話就h
 
 而Placement group 基本上就是 list of bundle
 
-GCS中把placement group的部分拆分為scheduler & manager
+Ray 支援幾種不同的 placement strategies：
+- PACK: 盡量把 bundles 放在最少的節點上（適合有大量網路傳輸使用）
+- SPREAD: 盡量把 bundles 分散到不同節點上
+- STRICT_PACK: 強制所有 bundles 必須在同一個節點上
+- STRICT_SPREAD: 強制每個 bundle 都在不同節點上
+GCS 中把 placement group 的部分拆分為 Scheduler & Manager，分離了schedule的邏輯和placement group的狀態管理：
 ##### Scheduler
 -  利用兩階段提交 (Two-Phase Commit)確定所有發到node上的prepare bundle request都是成功的，如果沒有就把資源都是放掉
   ```cpp
@@ -117,11 +123,26 @@ enum class LeasingState {
   CANCELLED
 };
 ```
+1. PREPARING 階段：
+- 根據 placement strategy 選擇合適的節點
+- 對每個合適的節點發送 `PrepareBundleResources` RPC
+- 節點檢查是否有足夠資源，如果有就暫時預留（但不實際分配）
+- 等待所有節點回覆
+2. COMMITTING 階段：
+- 如果所有節點都成功預留資源，發送 `CommitBundleResources` RPC
+- 節點將預留的資源正式分配給該 placement group
+- 如果任何一個節點失敗，發送 `CancelResourceReserve` 到所有節點釋放預留
 ##### Manager
 負責管理、控制placement group 的 life cycle
 ```cpp
+absl::flat_hash_map<PlacementGroupID, std::shared_ptr<GcsPlacementGroup>>
+registered_placement_groups_;
+
 absl::btree_multimap<int64_t, std::pair<ExponentialBackoff, std::shared_ptr<GcsPlacementGroup>>> pending_placement_groups_;
+
+std::deque<std::shared_ptr<GcsPlacementGroup>> infeasible_placement_groups_;
 ```
+
 - Tracks placement group states (PENDING → PREPARED → CREATED → REMOVED)
 #### Actor Manager
 和placement group 一樣，actor 在GCS中也被拆分為scheduler & manager。
