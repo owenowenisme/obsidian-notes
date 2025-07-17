@@ -93,10 +93,8 @@ StartHealthCheck 裡面就是 grpc 去call node 然後看status 失敗的話就h
 另外 ray syncer 大概也可以順便知道health情形，所以可以把最後的 `latest_known_healthy_timestamp_` 往後推，如果 `(now <= next_check_time)`  就把現在這個return，然後重新開一個timer推到 loop 中。
 
 #### GCS Job Manager
-這個感覺比較有趣
-負責管理Job 的狀態以及通知關心job finish 的listener
-
-// 什麼會被放在GCS table -> 無法被歸類在任一種manager下 e.g. Job table 除會被 job manager使用到 GCS client 也會發rpc 要這些資料 ->後面會講 （JobInfoAccessor）(待商榷)
+這個manager沒有什麼特碟的地方，僅僅負責管理Job 的狀態以及通知關心job finish 的listener。
+另外，因為job table是被放在`gcs_table_storage_`中，因此manager中只有`cached_job_configs_` 用來儲存job config。
 #### Placement Group Manager
 
 這邊貼一下 ray document 對於bundle的定義：
